@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         /*
         item1 = new Item(0, "dir1");
         item2 = new Item(0,"dir2");
-        item3 = new Item(0,"dir3");
+        item3 = new Item(0,"dir3");faa
 
         itemsList= new Items();
         itemsList.addItem(item1);
