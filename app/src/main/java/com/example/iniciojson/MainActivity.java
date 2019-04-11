@@ -1,5 +1,8 @@
 package com.example.iniciojson;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,22 +18,11 @@ public class MainActivity extends AppCompatActivity {
     ItemsAdapter mItemAdapter;
     TextView textView;
     String json;
-    Item item1 /*, item2, item3*/;
+    Item item1;
     Items itemsList;
     EditText editText;
     Button button;
-
-
-
-    //refactorizar como ArrayList
-    /*
-    Item items[]= new Item[]{
-            new Item(0, "Hola"),
-            new Item(0, "Adiós"),
-            new Item(0, "Buenas tardes"),
-            new Item(0, "¿Qué tal?"),
-            new Item(0, "PAPAPAPA"),
-    };*/
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,48 +34,48 @@ public class MainActivity extends AppCompatActivity {
         editText = findViewById(R.id.datos);
         button = findViewById(R.id.guardarDatos);
 
+        itemsList= new Items();
+
+        UsuariosSQLiteHelper usdbh = new UsuariosSQLiteHelper(this, "DBUsuarios", null, 1);
+
+        db = usdbh.getWritableDatabase();
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 item1 = new Item(0, editText.getText().toString());
 
-                itemsList= new Items();
                 itemsList.addItem(item1);
 
+                ContentValues nuevoRegistro = new ContentValues();
+                nuevoRegistro.put("codigo", 0);
+                nuevoRegistro.put("nombre", String.valueOf( item1 ) );
+                db.insert("Items", null, nuevoRegistro);
+                
                 editText.setText("");
 
                 mItemAdapter = new ItemsAdapter(MainActivity.this, R.layout.itemview, itemsList.getItemsList());
 
                 listView.setAdapter( mItemAdapter );
 
+                Cursor c = db.rawQuery("SELECT codigo, nombre FROM Items", null);
+
+                if (c.moveToFirst()) {
+                    //Recorremos el cursor hasta que no haya más registros
+                    do {
+                        String cod = c.getString(0);
+                        String nom = c.getString(1);
+
+                        editText.append(" " + cod + " - " + nom + "\n");
+                    } while(c.moveToNext());
+                }
+
                 //json = itemsList.toJSON();
                 //Log.i("gsonExample", json);
             }
         });
 
-        /*
-        item1 = new Item(0, "dir1");
-        item2 = new Item(0,"dir2");
-        item3 = new Item(0,"dir3");faa
-
-        itemsList= new Items();
-        itemsList.addItem(item1);
-        itemsList.addItem(item2);
-        itemsList.addItem(item3);
-        */
-
-        /*
-
-        for(int i=0; i<3 itemsList.length ;i++){
-            mItemAdapter = new ItemsAdapter(this, R.layout.itemview, itemsList[]);
-        }
-
-        listView.setAdapter( mItemAdapter );
-
-        json = itemsList.toJSON();
-        Log.i("gsonExample", json);
-
-        */
-
     }
 }
+
+

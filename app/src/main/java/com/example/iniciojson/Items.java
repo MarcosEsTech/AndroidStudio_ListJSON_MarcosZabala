@@ -27,7 +27,9 @@ public class Items {
         return gson.fromJson(json, Items.class);
     }
 
-    public void addItem(Item item) { itemsList.add(item); }
+    public void addItem(Item item) {
+        itemsList.add(item);
+    }
 
     public void removeItem(Item item) {
         itemsList.remove(item);
